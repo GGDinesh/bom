@@ -1,0 +1,79 @@
+<html>
+<head>
+    <script>
+        function setEventApiCall(evt){
+            fetch("localhost:3000/setEvents/"+evt)
+            .then(res => res.json())
+            .then(json => {
+                console.log('json', json)
+            });
+        }
+        class pageEvent{
+            constructor(evts){
+                this.events =evts;
+            }
+            setEvents(evt){
+                this.events = evt;
+                setEventApiCall(evt)
+            }
+            getEvent(){
+                return "Home : "+this.events;
+            }
+        }
+        // constructor setting with page load events
+        const pgEvt = new pageEvent("page load events");
+        addEventListener('pageshow', (event) => { 
+            console.log(pgEvt.getEvent()+":::"+JSON.stringify(event)); 
+            const nameInput = document.querySelector("#name");
+
+            nameInput.addEventListener("input", (event) => {
+            if (event.target.value !== "") {
+                addEventListener("beforeunload", beforeUnloadListener, {capture: true});
+            } else {
+                removeEventListener("beforeunload", beforeUnloadListener, {capture: true});
+            }
+            });
+        });
+        addEventListener('focus', (event) => {
+            pgEvt.setEvents("page focus event")
+            console.log(pgEvt.getEvent())
+        });
+        addEventListener('blur', (event) => {
+            pgEvt.setEvents("page blur event")
+            console.log(pgEvt.getEvent())
+        });
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible') {
+                pgEvt.setEvents("page visible event")
+                console.log(pgEvt.getEvent())
+            } else {
+                pgEvt.setEvents("page hide event")
+                console.log(pgEvt.getEvent())
+            }
+        });
+        
+        const beforeUnloadListener = (event) => {
+            event.preventDefault();
+            pgEvt.setEvents("beforeUnloadListener event")
+            console.log(pgEvt.getEvent())
+            return event.returnValue = "Are you sure you want to exit?";
+        };
+
+        addEventListener('pagehide', (event) => { 
+            pgEvt.setEvents("page pageHide event")
+            console.log(pgEvt.getEvent())
+        });
+
+        addEventListener('unload', (event) => { 
+            pgEvt.setEvents("page unload event")
+            console.log(pgEvt.getEvent())
+        });
+        
+    </script>
+</head>
+<body>
+Home page content
+<input type="text" id="name" /> 
+<a href="./about.html">Load About Us</a>
+</body>
+</html>
